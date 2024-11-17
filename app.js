@@ -162,6 +162,35 @@ document.addEventListener("DOMContentLoaded", async () => {
     dataEntryForm.reset();
   };
 
+  const exportData = async () => {
+    if (!currentRegisterId) {
+      alert("No register selected for export.");
+      return;
+    }
+
+    const register = await db.registers.get(currentRegisterId);
+    if (!register.data || register.data.length === 0) {
+      alert("No data available for export.");
+      return;
+    }
+
+    const csvContent = [
+      Object.keys(register.fields.reduce((acc, field) => ({ ...acc, [field.name]: "" }), {})).join(
+        ","
+      ), // Headers
+      ...register.data.map((row) => Object.values(row).join(",")), // Rows
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    const filename = `${register.name}-${new Date().toISOString().split("T")[0]}.csv`;
+    link.download = filename;
+    link.click();
+
+    alert(`Data exported as ${filename}`);
+  };
+
   const addRegister = async () => {
     const name = prompt("Enter Register Name");
     if (!name) return;
@@ -188,50 +217,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     renderRegisters();
   };
 
-  const editRegister = async (id) => {
-    const register = await db.registers.get(id);
-    const newName = prompt("Enter new register name", register.name);
-    if (newName) register.name = newName;
-
-    while (true) {
-      const fieldName = prompt("Enter new field name to add or leave blank to finish");
-      if (!fieldName) break;
-
-      const fieldType = prompt(
-        "Enter field type (text, integer, decimal, date, time, email, telephone, select_one, select_multiple, multiline, image)"
-      );
-      const field = { name: fieldName, type: fieldType };
-
-      if (fieldType === "select_one" || fieldType === "select_multiple") {
-        field.options = prompt("Enter options separated by commas (e.g., Male,Female)").split(",");
-      }
-
-      register.fields.push(field);
-    }
-
-    await db.registers.put(register);
-    alert("Register updated successfully");
-    renderRegisters();
-  };
-
-  const deleteRegister = async (id) => {
-    if (confirm("Are you sure you want to delete this register?")) {
-      await db.registers.delete(id);
-      alert("Register deleted successfully");
-      renderRegisters();
-    }
-  };
-
-  const toBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = (error) => reject(error);
-    });
-  };
-
   document.getElementById("add-register-btn").addEventListener("click", addRegister);
+
+  document.getElementById("export-data-btn").addEventListener("click", exportData);
 
   document.getElementById("back-btn").addEventListener("click", () => {
     registerFormSection.style.display = "none";

@@ -1,5 +1,5 @@
 {
-    "name": "Clinic Registers",
+    "name": "Registers",
     "short_name": "Registers",
     "start_url": "./index.html",
     "display": "standalone",
