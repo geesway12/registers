@@ -1,0 +1,21 @@
+{
+    "name": "Clinic Registers",
+    "short_name": "Registers",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#FFFFFF",
+    "theme_color": "#0047AB",
+    "icons": [
+      {
+        "src": "assets/icon-192x192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "assets/icon-512x512.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ]
+  }
+  
