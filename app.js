@@ -21,17 +21,19 @@ document.addEventListener("DOMContentLoaded", async () => {
       const li = document.createElement("li");
       li.textContent = register.name;
 
+      // Add Edit Button
       const editBtn = document.createElement("button");
       editBtn.textContent = "Edit";
       editBtn.addEventListener("click", (event) => {
-        event.stopPropagation(); // Prevent triggering register open
+        event.stopPropagation(); // Prevent triggering the register open
         editRegister(register.id);
       });
 
+      // Add Delete Button
       const deleteBtn = document.createElement("button");
       deleteBtn.textContent = "Delete";
       deleteBtn.addEventListener("click", (event) => {
-        event.stopPropagation(); // Prevent triggering register open
+        event.stopPropagation(); // Prevent triggering the register open
         deleteRegister(register.id);
       });
 
@@ -215,6 +217,52 @@ document.addEventListener("DOMContentLoaded", async () => {
     const newRegister = { name, fields, data: [] };
     await db.registers.add(newRegister);
     renderRegisters();
+  };
+
+  const editRegister = async (id) => {
+    const register = await db.registers.get(id);
+
+    // Prompt for new register name
+    const newName = prompt("Enter new register name", register.name);
+    if (newName) register.name = newName;
+
+    // Prompt to add new fields
+    while (true) {
+      const fieldName = prompt("Enter new field name to add or leave blank to finish");
+      if (!fieldName) break;
+
+      const fieldType = prompt(
+        "Enter field type (text, integer, decimal, date, time, email, telephone, select_one, select_multiple, multiline, image)"
+      );
+      const field = { name: fieldName, type: fieldType };
+
+      if (fieldType === "select_one" || fieldType === "select_multiple") {
+        field.options = prompt("Enter options separated by commas (e.g., Male,Female)").split(",");
+      }
+
+      register.fields.push(field);
+    }
+
+    await db.registers.put(register);
+    alert("Register updated successfully");
+    renderRegisters();
+  };
+
+  const deleteRegister = async (id) => {
+    if (confirm("Are you sure you want to delete this register? This action cannot be undone.")) {
+      await db.registers.delete(id);
+      alert("Register deleted successfully");
+      renderRegisters();
+    }
+  };
+
+  const toBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
   };
 
   document.getElementById("add-register-btn").addEventListener("click", addRegister);
