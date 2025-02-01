@@ -5,8 +5,8 @@ body {
 }
 
 header, footer {
-  background-color: #f1f1f1;
-  color: white;
+  background-color: #f1f1f1; /* Light grey background for header and footer */
+  color: black; /* Change text color to black */
   text-align: center;
   padding: 10px 0;
 }
@@ -18,15 +18,15 @@ main {
 button {
   margin: 5px;
   padding: 10px;
-  background-color: #0047AB;
-  color: white;
+  background-color: #d3d3d3; /* Light grey background for buttons */
+  color: black; /* Change text color to black */
   border: none;
   border-radius: 5px;
   cursor: pointer;
 }
 
 button:hover {
-  background-color: #003380;
+  background-color: #a9a9a9; /* Darker grey on hover */
 }
 
 form input, form select, form textarea {
